@@ -113,7 +113,6 @@ def upsert_answer(attempt_id: uuid.UUID, payload: AnswerUpsert, db: Session = De
 
 @app.post("/attempts/{attempt_id}/submit")
 def submit_attempt(attempt_id: uuid.UUID, db: Session = Depends(get_db)):
-    #The score is calculated
     row = db.execute(
         text("""
           SELECT a.attempt_id, a.quiz_id
@@ -122,22 +121,34 @@ def submit_attempt(attempt_id: uuid.UUID, db: Session = Depends(get_db)):
         """),
         {"a": attempt_id},
     ).mappings().first()
+
     if not row:
         raise HTTPException(404, "Attempt not found")
 
-    score_row = db.execute(
+    result_rows = db.execute(
         text("""
           SELECT
-            SUM(CASE WHEN ans.chosen_index = q.correct_index THEN 1 ELSE 0 END) AS score,
-            COUNT(q.question_id) AS max_score
+            q.question_id,
+            q.prompt,
+            q.options,
+            q.correct_index,
+            ans.chosen_index,
+            CASE
+              WHEN ans.chosen_index = q.correct_index THEN TRUE
+              ELSE FALSE
+            END AS is_correct
           FROM questions q
           LEFT JOIN answers ans
             ON ans.question_id = q.question_id
            AND ans.attempt_id = :a
           WHERE q.quiz_id = :quiz
+          ORDER BY q.created_at ASC
         """),
         {"a": attempt_id, "quiz": row["quiz_id"]},
-    ).mappings().first()
+    ).mappings().all()
+
+    score = sum(1 for r in result_rows if r["is_correct"])
+    max_score = len(result_rows)
 
     db.execute(
         text("""
@@ -147,8 +158,30 @@ def submit_attempt(attempt_id: uuid.UUID, db: Session = Depends(get_db)):
               max_score = :m
           WHERE attempt_id = :a
         """),
-        {"s": int(score_row["score"] or 0), "m": int(score_row["max_score"] or 0), "a": attempt_id},
+        {"s": score, "m": max_score, "a": attempt_id},
     )
     db.commit()
-    return {"attempt_id": str(attempt_id), "score": int(score_row["score"] or 0), "max_score": int(score_row["max_score"] or 0)}
 
+    results = []
+    for r in result_rows:
+        options = r["options"] or []
+        chosen_index = r["chosen_index"]
+        correct_index = r["correct_index"]
+
+        results.append({
+            "question_id": str(r["question_id"]),
+            "prompt": r["prompt"],
+            "options": options,
+            "chosen_index": chosen_index,
+            "correct_index": correct_index,
+            "is_correct": bool(r["is_correct"]),
+            "chosen_option": options[chosen_index] if chosen_index is not None and 0 <= chosen_index < len(options) else None,
+            "correct_option": options[correct_index] if correct_index is not None and 0 <= correct_index < len(options) else None,
+        })
+
+    return {
+        "attempt_id": str(attempt_id),
+        "score": score,
+        "max_score": max_score,
+        "results": results,
+    }

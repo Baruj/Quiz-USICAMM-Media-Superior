@@ -1,103 +1,268 @@
-
 <!doctype html>
-<html>
-	<head>
-		<meta charset="utf-8"/>
-		<title>quiz-telemetry-pipeline</title>
-<style>
-body {font-family: Arial, sans-serif; margin: 24px; }
-button { margin: 4px 6px 4px 0; }
-.picked { font-weight: bold; }
-.saved {color: green; font-size: 12px; margin-left: 8px; }
-</style>
-	</head>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>quiz-telemetry-pipeline</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 24px;
+      max-width: 900px;
+    }
+
+    button {
+      margin: 4px 6px 4px 0;
+      padding: 10px 14px;
+      cursor: pointer;
+    }
+
+    .picked {
+      font-weight: bold;
+      outline: 2px solid #2563eb;
+    }
+
+    .saved {
+      color: green;
+      font-size: 12px;
+      margin-left: 8px;
+      display: inline-block;
+      min-height: 18px;
+    }
+
+    .question-block {
+      margin-bottom: 22px;
+      padding: 14px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .options-row {
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+
+    .result-banner {
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      display: none;
+    }
+
+    .result-correct {
+      display: block;
+      background: #dff5e8;
+      color: #0f6b3f;
+      border: 1px solid #b7e4c7;
+    }
+
+    .result-incorrect {
+      display: block;
+      background: #f9e1e4;
+      color: #b42318;
+      border: 1px solid #f2b8bf;
+    }
+
+    .answer-detail {
+      margin-top: 8px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .answer-detail.show {
+      display: block;
+    }
+
+    .correct-option {
+      background: #dff5e8;
+      border: 1px solid #0f6b3f;
+    }
+
+    .wrong-option {
+      background: #f9e1e4;
+      border: 1px solid #b42318;
+    }
+
+    .score-box {
+      margin: 18px 0;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: #f3f4f6;
+      font-weight: bold;
+      display: none;
+    }
+
+    #submit-btn {
+      margin-top: 14px;
+    }
+  </style>
+</head>
 <body>
-	<h1> Quiz About Data Engineering </h1>
-	<div id="app">Cargando...</div>
+  <h1>Quiz About Data Engineering</h1>
+  <div id="app">Cargando...</div>
 
-<script>
-const API = "http://localhost:8000";
+  <script>
+    const API = "http://localhost:8000";
 
-async function main() {
-	const app = document.getElementById("app");
+    async function main() {
+      const app = document.getElementById("app");
 
-	const quizzes = await (await fetch(`${API}/quizzes`)).json();
-	if (!quizzes.items.length) { app.textContent = "There is no quizzes. Run the seed."; return; }
-	const q = quizzes.items[0];
-	app.innerHTML = `
-	  <h2>${q.title}</h2>
-	  <p>${q.description || ""}</p>
-	  <input id="username" placeholder="Your name (optional)"/>
-	  <button id="start">Start</button>
-	  <div id="quiz"></div>
-	`;
+      const quizzes = await (await fetch(`${API}/quizzes`)).json();
+      if (!quizzes.items.length) {
+        app.textContent = "There are no quizzes. Run the seed.";
+        return;
+      }
 
-	document.getElementById("start").onclick = async () => {
-	  const username = document.getElementById("username").value.trim() || null;
+      const q = quizzes.items[0];
+      app.innerHTML = `
+        <h2>${q.title}</h2>
+        <p>${q.description || ""}</p>
+        <input id="username" placeholder="Your name (optional)" />
+        <button id="start">Start</button>
+        <div id="score-box" class="score-box"></div>
+        <div id="quiz"></div>
+      `;
 
-	  const attempt = await (await fetch(`${API}/attempts`, {
-	    method: "POST",
-	    headers:{"Content-Type":"application/json"},
-	    body: JSON.stringify({ quiz_id: q.quiz_id, username })
-	  })).json();
+      document.getElementById("start").onclick = async () => {
+        const username = document.getElementById("username").value.trim() || null;
 
-		const data = await (await fetch(`${API}/quizzes/${q.quiz_id}/questions`)).json();
-		renderQuiz(attempt.attempt_id, data.questions);
-	};
-}
+        const attempt = await (await fetch(`${API}/attempts`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ quiz_id: q.quiz_id, username })
+        })).json();
 
-function renderQuiz(attemptId, questions) {
-  const div = document.getElementById("quiz");
-  div.innerHTML = "";
+        const data = await (await fetch(`${API}/quizzes/${q.quiz_id}/questions`)).json();
+        renderQuiz(attempt.attempt_id, data.questions);
+      };
+    }
 
-  questions.forEach((qq, i) => {
-    const block = document.createElement("div");
-    block.style.marginBottom = "16px";
+    function renderQuiz(attemptId, questions) {
+      const div = document.getElementById("quiz");
+      const scoreBox = document.getElementById("score-box");
+      div.innerHTML = "";
 
-    const title = document.createElement("p");
-    title.innerHTML = `<b>${i+1}.</b> ${qq.prompt}`;
-    block.appendChild(title);
+      const blocksByQuestionId = {};
 
-    const status = document.createElement("span");
-    status.className = "saved";
-    block.appendChild(status);
+      questions.forEach((qq, i) => {
+        const block = document.createElement("div");
+        block.className = "question-block";
+        block.dataset.questionId = qq.question_id;
 
-    qq.options.forEach((opt, idx) => {
-      const btn = document.createElement("button");
-      btn.textContent = opt;
+        const title = document.createElement("p");
+        title.innerHTML = `<b>${i + 1}.</b> ${qq.prompt}`;
+        block.appendChild(title);
 
-      btn.onclick = async () => {
-        // send the answer
-        await fetch(`${API}/attempts/${attemptId}/answers`, {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ question_id: qq.question_id, chosen_index: idx })
+        const status = document.createElement("span");
+        status.className = "saved";
+        block.appendChild(status);
+
+        const optionsRow = document.createElement("div");
+        optionsRow.className = "options-row";
+
+        qq.options.forEach((opt, idx) => {
+          const btn = document.createElement("button");
+          btn.textContent = opt;
+          btn.className = "option-btn";
+          btn.dataset.optionIndex = String(idx);
+
+          btn.onclick = async () => {
+            await fetch(`${API}/attempts/${attemptId}/answers`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ question_id: qq.question_id, chosen_index: idx })
+            });
+
+            [...optionsRow.querySelectorAll("button")].forEach(b => {
+              b.disabled = true;
+              b.classList.remove("picked");
+            });
+
+            btn.classList.add("picked");
+            status.textContent = "Saved ✓";
+          };
+
+          optionsRow.appendChild(btn);
         });
 
-        // UI feedback: mark the selection and disable the rest
-        [...block.querySelectorAll("button")].forEach(b => b.disabled = true);
-        btn.classList.add("picked");
-        status.textContent = "Saved ✓";
+        block.appendChild(optionsRow);
+
+        const resultBanner = document.createElement("div");
+        resultBanner.className = "result-banner";
+        block.appendChild(resultBanner);
+
+        const detail = document.createElement("div");
+        detail.className = "answer-detail";
+        block.appendChild(detail);
+
+        div.appendChild(block);
+
+        blocksByQuestionId[qq.question_id] = {
+          block,
+          optionsRow,
+          resultBanner,
+          detail
+        };
+      });
+
+      const submit = document.createElement("button");
+      submit.id = "submit-btn";
+      submit.textContent = "Send";
+
+      submit.onclick = async () => {
+        const res = await (await fetch(`${API}/attempts/${attemptId}/submit`, {
+          method: "POST"
+        })).json();
+
+        scoreBox.style.display = "block";
+        scoreBox.textContent = `Score: ${res.score}/${res.max_score}`;
+
+        renderResults(res.results, blocksByQuestionId);
+
+        submit.disabled = true;
       };
 
-      block.appendChild(btn);
-    });
+      div.appendChild(document.createElement("hr"));
+      div.appendChild(submit);
+    }
 
-    div.appendChild(block);
-  });
+    function renderResults(results, blocksByQuestionId) {
+      results.forEach(r => {
+        const item = blocksByQuestionId[r.question_id];
+        if (!item) return;
 
-  const submit = document.createElement("button");
-  submit.textContent = "Send";
-  submit.onclick = async () => {
-    const res = await (await fetch(`${API}/attempts/${attemptId}/submit`, { method:"POST" })).json();
-    alert(`Score: ${res.score}/${res.max_score}`);
-  };
+        const buttons = [...item.optionsRow.querySelectorAll("button")];
+        const chosenBtn = buttons.find(b => Number(b.dataset.optionIndex) === r.chosen_index);
+        const correctBtn = buttons.find(b => Number(b.dataset.optionIndex) === r.correct_index);
 
-  div.appendChild(document.createElement("hr"));
-  div.appendChild(submit);
-}
+        if (correctBtn) {
+          correctBtn.classList.add("correct-option");
+        }
 
-main();
-</script>
+        if (chosenBtn && r.chosen_index !== r.correct_index) {
+          chosenBtn.classList.add("wrong-option");
+        }
+
+        item.resultBanner.className = "result-banner " + (r.is_correct ? "result-correct" : "result-incorrect");
+        item.resultBanner.textContent = r.is_correct ? "Correct" : "Incorrect";
+
+        item.detail.classList.add("show");
+
+        if (r.chosen_option === null || r.chosen_option === undefined) {
+          item.detail.innerHTML = `You did not answer this question.<br><b>Correct answer:</b> ${r.correct_option}`;
+        } else if (r.is_correct) {
+          item.detail.innerHTML = `<b>Your answer:</b> ${r.chosen_option}`;
+        } else {
+          item.detail.innerHTML = `
+            <b>Your answer:</b> ${r.chosen_option}<br>
+            <b>Correct answer:</b> ${r.correct_option}
+          `;
+        }
+      });
+    }
+
+    main();
+  </script>
 </body>
 </html>
