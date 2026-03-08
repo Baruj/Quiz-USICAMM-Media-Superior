@@ -1,268 +1,388 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <title>quiz-telemetry-pipeline</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 24px;
-      max-width: 900px;
-    }
+<meta charset="utf-8" />
+<title>Quiz-USICAMM-Media-Superior</title>
+<style>
+body {
+	font-family: Arial, sans-serif;
+	margin: 24px;
+	max-width: 960px;
+	background: #f8fafc;
+}
 
-    button {
-      margin: 4px 6px 4px 0;
-      padding: 10px 14px;
-      cursor: pointer;
-    }
+h1, h2, h3 {
+	margin-bottom: 8px;
+}
 
-    .picked {
-      font-weight: bold;
-      outline: 2px solid #2563eb;
-    }
+.panel {
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 10px;
+	padding: 16px;
+	margin-bottom: 18px;
+}
 
-    .saved {
-      color: green;
-      font-size: 12px;
-      margin-left: 8px;
-      display: inline-block;
-      min-height: 18px;
-    }
+label {
+	display: block;
+	margin-bottom: 6px;
+	font-weight: bold;
+}
 
-    .question-block {
-      margin-bottom: 22px;
-      padding: 14px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      background: #fff;
-    }
+select, input {
+	width: 100%;
+	max-width: 520px;
+	padding: 10px;
+	margin-bottom: 12px;
+	border: 1px solid #ccc;
+	border-radius: 8px;
+	box-sizing: border-box;
+}
 
-    .options-row {
-      margin-top: 8px;
-      margin-bottom: 8px;
-    }
+button {
+	margin: 4px 6px 4px 0;
+	padding: 10px 14px;
+	cursor: pointer;
+	border: 1px solid #bbb;
+	border-radius: 8px;
+	background: #fff;
+}
 
-    .result-banner {
-      margin-top: 12px;
-      padding: 12px 14px;
-      border-radius: 6px;
-      font-weight: bold;
-      display: none;
-    }
+button:hover {
+	background: #f1f5f9;
+}
 
-    .result-correct {
-      display: block;
-      background: #dff5e8;
-      color: #0f6b3f;
-      border: 1px solid #b7e4c7;
-    }
+.picked {
+	font-weight: bold;
+	outline: 2px solid #2563eb;
+}
 
-    .result-incorrect {
-      display: block;
-      background: #f9e1e4;
-      color: #b42318;
-      border: 1px solid #f2b8bf;
-    }
+.saved {
+	color: green;
+	font-size: 12px;
+	margin-left: 8px;
+	display: inline-block;
+	min-height: 18px;
+}
 
-    .answer-detail {
-      margin-top: 8px;
-      font-size: 14px;
-      display: none;
-    }
+.question-block {
+	margin-bottom: 22px;
+	padding: 14px;
+	border: 1px solid #ddd;
+	border-radius: 8px;
+	background: #fff;
+}
 
-    .answer-detail.show {
-      display: block;
-    }
+.options-row {
+	margin-top: 8px;
+	margin-bottom: 8px;
+}
 
-    .correct-option {
-      background: #dff5e8;
-      border: 1px solid #0f6b3f;
-    }
+.result-banner {
+	margin-top: 12px;
+	padding: 12px 14px;
+	border-radius: 6px;
+	font-weight: bold;
+	display: none;
+}
 
-    .wrong-option {
-      background: #f9e1e4;
-      border: 1px solid #b42318;
-    }
+.result-correct {
+	display: block;
+	background: #dff5e8;
+	color: #0f6b3f;
+	border: 1px solid #b7e4c7;
+}
 
-    .score-box {
-      margin: 18px 0;
-      padding: 12px 14px;
-      border-radius: 8px;
-      background: #f3f4f6;
-      font-weight: bold;
-      display: none;
-    }
+.result-incorrect {
+	display: block;
+	background: #f9e1e4;
+	color: #b42318;
+	border: 1px solid #f2b8bf;
+}
 
-    #submit-btn {
-      margin-top: 14px;
-    }
-  </style>
+.answer-detail {
+	margin-top: 8px;
+	font-size: 14px;
+	display: none;
+	line-height: 1.5;
+}
+
+.answer-detail.show {
+	display: block;
+}
+
+.correct-option {
+	background: #dff5e8;
+	border: 1px solid #0f6b3f;
+}
+
+.wrong-option {
+	background: #f9e1e4;
+	border: 1px solid #b42318;
+}
+
+.score-box {
+	margin: 18px 0;
+	padding: 12px 14px;
+	border-radius: 8px;
+	background: #e5eefc;
+	font-weight: bold;
+	display: none;
+}
+
+.muted {
+	color: #475569;
+	font-size: 14px;
+}
+
+#submit-btn {
+	margin-top: 14px;
+}
+</style>
 </head>
 <body>
-  <h1>Quiz About Data Engineering</h1>
-  <div id="app">Cargando...</div>
+<h1>Simulador USICAMM</h1>
+<p class="muted">
+Selecciona un quiz temático o el quiz integrador, responde y revisa tus resultados.
+</p>
 
-  <script>
-    const API = "http://localhost:8000";
+<div id="app">Cargando...</div>
 
-    async function main() {
-      const app = document.getElementById("app");
+<script src="./config.js"></script>
+<script>
+const API = window.APP_CONFIG?.API_URL || "http://localhost:8000";
 
-      const quizzes = await (await fetch(`${API}/quizzes`)).json();
-      if (!quizzes.items.length) {
-        app.textContent = "There are no quizzes. Run the seed.";
-        return;
-      }
+let allQuizzes = [];
 
-      const q = quizzes.items[0];
-      app.innerHTML = `
-        <h2>${q.title}</h2>
-        <p>${q.description || ""}</p>
-        <input id="username" placeholder="Your name (optional)" />
-        <button id="start">Start</button>
-        <div id="score-box" class="score-box"></div>
-        <div id="quiz"></div>
-      `;
+async function main() {
+	const app = document.getElementById("app");
+	
+	try {
+		const quizzesResponse = await fetch(`${API}/quizzes`);
+		const quizzes = await quizzesResponse.json();
+		
+		if (!quizzes.items || !quizzes.items.length) {
+			app.textContent = "No hay quizzes disponibles. Ejecuta el seed.";
+			return;
+		}
+		
+		allQuizzes = quizzes.items;
+		
+		app.innerHTML = `
+		<div class="panel">
+		<h2>Selecciona un quiz</h2>
+		<p class="muted">
+		La interfaz mostrará los quizzes disponibles. Idealmente habrá 10 temáticos y 1 integrador.
+		</p>
+		
+		<label for="quiz-select">Quiz disponible</label>
+		<select id="quiz-select"></select>
+		
+		<div id="quiz-info" class="panel" style="margin-top:12px;">
+		<h3 id="quiz-title"></h3>
+		<p id="quiz-description" class="muted"></p>
+		</div>
+		
+		<label for="username">Nombre del usuario (opcional)</label>
+		<input id="username" placeholder="Escribe tu nombre" />
+		
+		<button id="start">Comenzar quiz</button>
+		</div>
+		
+		<div id="score-box" class="score-box"></div>
+		<div id="quiz"></div>
+		`;
+		
+		buildQuizSelector(allQuizzes);
+		updateQuizInfo();
+		
+		document.getElementById("quiz-select").addEventListener("change", updateQuizInfo);
+		
+		document.getElementById("start").onclick = async () => {
+			const username = document.getElementById("username").value.trim() || null;
+			const selectedQuizId = document.getElementById("quiz-select").value;
+			
+			const attempt = await (await fetch(`${API}/attempts`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ quiz_id: selectedQuizId, username })
+			})).json();
+			
+			const data = await (await fetch(`${API}/quizzes/${selectedQuizId}/questions`)).json();
+			
+			renderQuiz(attempt.attempt_id, data);
+		};
+	} catch (error) {
+		app.textContent = "No fue posible cargar la aplicación.";
+		console.error(error);
+	}
+}
 
-      document.getElementById("start").onclick = async () => {
-        const username = document.getElementById("username").value.trim() || null;
+function buildQuizSelector(quizzes) {
+	const select = document.getElementById("quiz-select");
+	select.innerHTML = "";
+	
+	quizzes.forEach((quiz) => {
+		const option = document.createElement("option");
+		option.value = quiz.quiz_id;
+		option.textContent = quiz.title;
+		select.appendChild(option);
+	});
+}
 
-        const attempt = await (await fetch(`${API}/attempts`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ quiz_id: q.quiz_id, username })
-        })).json();
+function updateQuizInfo() {
+	const select = document.getElementById("quiz-select");
+	const selectedQuiz = allQuizzes.find(q => q.quiz_id === select.value) || allQuizzes[0];
+	
+	document.getElementById("quiz-title").textContent = selectedQuiz?.title || "";
+	document.getElementById("quiz-description").textContent = selectedQuiz?.description || "";
+}
 
-        const data = await (await fetch(`${API}/quizzes/${q.quiz_id}/questions`)).json();
-        renderQuiz(attempt.attempt_id, data.questions);
-      };
-    }
+function renderQuiz(attemptId, quizData) {
+	const div = document.getElementById("quiz");
+	const scoreBox = document.getElementById("score-box");
+	
+	scoreBox.style.display = "none";
+	scoreBox.textContent = "";
+	
+	div.innerHTML = `
+	<div class="panel">
+	<h2>${quizData.title || "Quiz seleccionado"}</h2>
+	<p class="muted">${quizData.description || ""}</p>
+	</div>
+	`;
+	
+	const blocksByQuestionId = {};
+	
+	quizData.questions.forEach((qq, i) => {
+		const block = document.createElement("div");
+		block.className = "question-block";
+		block.dataset.questionId = qq.question_id;
+		
+		const title = document.createElement("p");
+		title.innerHTML = `<b>${i + 1}.</b> ${qq.prompt}`;
+		block.appendChild(title);
+		
+		const status = document.createElement("span");
+		status.className = "saved";
+		block.appendChild(status);
+		
+		const optionsRow = document.createElement("div");
+		optionsRow.className = "options-row";
+		
+		qq.options.forEach((opt, idx) => {
+			const btn = document.createElement("button");
+			btn.textContent = opt;
+			btn.className = "option-btn";
+			btn.dataset.optionIndex = String(idx);
+			
+			btn.onclick = async () => {
+				await fetch(`${API}/attempts/${attemptId}/answers`, {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						question_id: qq.question_id,
+						chosen_index: idx
+					})
+				});
+				
+				[...optionsRow.querySelectorAll("button")].forEach(b => {
+					b.disabled = true;
+					b.classList.remove("picked");
+				});
+				
+				btn.classList.add("picked");
+				status.textContent = "Guardado ✓";
+			};
+			
+			optionsRow.appendChild(btn);
+		});
+		
+		block.appendChild(optionsRow);
+		
+		const resultBanner = document.createElement("div");
+		resultBanner.className = "result-banner";
+		block.appendChild(resultBanner);
+		
+		const detail = document.createElement("div");
+		detail.className = "answer-detail";
+		block.appendChild(detail);
+		
+		div.appendChild(block);
+		
+		blocksByQuestionId[qq.question_id] = {
+			block,
+			optionsRow,
+			resultBanner,
+			detail
+		};
+	});
+	
+	const submit = document.createElement("button");
+	submit.id = "submit-btn";
+	submit.textContent = "Enviar quiz";
+	
+	submit.onclick = async () => {
+		const res = await (await fetch(`${API}/attempts/${attemptId}/submit`, {
+			method: "POST"
+		})).json();
+		
+		scoreBox.style.display = "block";
+		scoreBox.textContent = `Puntaje: ${res.score}/${res.max_score}`;
+		
+		renderResults(res.results, blocksByQuestionId);
+		
+		submit.disabled = true;
+	};
+	
+	div.appendChild(document.createElement("hr"));
+	div.appendChild(submit);
+}
 
-    function renderQuiz(attemptId, questions) {
-      const div = document.getElementById("quiz");
-      const scoreBox = document.getElementById("score-box");
-      div.innerHTML = "";
+function renderResults(results, blocksByQuestionId) {
+	results.forEach(r => {
+		const item = blocksByQuestionId[r.question_id];
+		if (!item) return;
+		
+		const buttons = [...item.optionsRow.querySelectorAll("button")];
+		const chosenBtn = buttons.find(b => Number(b.dataset.optionIndex) === r.chosen_index);
+		const correctBtn = buttons.find(b => Number(b.dataset.optionIndex) === r.correct_index);
+		
+		if (correctBtn) {
+			correctBtn.classList.add("correct-option");
+		}
+		
+		if (chosenBtn && r.chosen_index !== r.correct_index) {
+			chosenBtn.classList.add("wrong-option");
+		}
+		
+		item.resultBanner.className =
+		"result-banner " + (r.is_correct ? "result-correct" : "result-incorrect");
+		item.resultBanner.textContent = r.is_correct ? "Correcta" : "Incorrecta";
+		
+		item.detail.classList.add("show");
+		
+		let detailHtml = "";
+		
+		if (r.chosen_option === null || r.chosen_option === undefined) {
+			detailHtml += `No respondiste esta pregunta.<br>`;
+			detailHtml += `<b>Respuesta correcta:</b> ${r.correct_option}`;
+		} else if (r.is_correct) {
+			detailHtml += `<b>Tu respuesta:</b> ${r.chosen_option}`;
+		} else {
+			detailHtml += `<b>Tu respuesta:</b> ${r.chosen_option}<br>`;
+			detailHtml += `<b>Respuesta correcta:</b> ${r.correct_option}`;
+		}
+		
+		if (r.explanation) {
+			detailHtml += `<br><b>Explicación:</b> ${r.explanation}`;
+		}
+		
+		item.detail.innerHTML = detailHtml;
+	});
+}
 
-      const blocksByQuestionId = {};
-
-      questions.forEach((qq, i) => {
-        const block = document.createElement("div");
-        block.className = "question-block";
-        block.dataset.questionId = qq.question_id;
-
-        const title = document.createElement("p");
-        title.innerHTML = `<b>${i + 1}.</b> ${qq.prompt}`;
-        block.appendChild(title);
-
-        const status = document.createElement("span");
-        status.className = "saved";
-        block.appendChild(status);
-
-        const optionsRow = document.createElement("div");
-        optionsRow.className = "options-row";
-
-        qq.options.forEach((opt, idx) => {
-          const btn = document.createElement("button");
-          btn.textContent = opt;
-          btn.className = "option-btn";
-          btn.dataset.optionIndex = String(idx);
-
-          btn.onclick = async () => {
-            await fetch(`${API}/attempts/${attemptId}/answers`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ question_id: qq.question_id, chosen_index: idx })
-            });
-
-            [...optionsRow.querySelectorAll("button")].forEach(b => {
-              b.disabled = true;
-              b.classList.remove("picked");
-            });
-
-            btn.classList.add("picked");
-            status.textContent = "Saved ✓";
-          };
-
-          optionsRow.appendChild(btn);
-        });
-
-        block.appendChild(optionsRow);
-
-        const resultBanner = document.createElement("div");
-        resultBanner.className = "result-banner";
-        block.appendChild(resultBanner);
-
-        const detail = document.createElement("div");
-        detail.className = "answer-detail";
-        block.appendChild(detail);
-
-        div.appendChild(block);
-
-        blocksByQuestionId[qq.question_id] = {
-          block,
-          optionsRow,
-          resultBanner,
-          detail
-        };
-      });
-
-      const submit = document.createElement("button");
-      submit.id = "submit-btn";
-      submit.textContent = "Send";
-
-      submit.onclick = async () => {
-        const res = await (await fetch(`${API}/attempts/${attemptId}/submit`, {
-          method: "POST"
-        })).json();
-
-        scoreBox.style.display = "block";
-        scoreBox.textContent = `Score: ${res.score}/${res.max_score}`;
-
-        renderResults(res.results, blocksByQuestionId);
-
-        submit.disabled = true;
-      };
-
-      div.appendChild(document.createElement("hr"));
-      div.appendChild(submit);
-    }
-
-    function renderResults(results, blocksByQuestionId) {
-      results.forEach(r => {
-        const item = blocksByQuestionId[r.question_id];
-        if (!item) return;
-
-        const buttons = [...item.optionsRow.querySelectorAll("button")];
-        const chosenBtn = buttons.find(b => Number(b.dataset.optionIndex) === r.chosen_index);
-        const correctBtn = buttons.find(b => Number(b.dataset.optionIndex) === r.correct_index);
-
-        if (correctBtn) {
-          correctBtn.classList.add("correct-option");
-        }
-
-        if (chosenBtn && r.chosen_index !== r.correct_index) {
-          chosenBtn.classList.add("wrong-option");
-        }
-
-        item.resultBanner.className = "result-banner " + (r.is_correct ? "result-correct" : "result-incorrect");
-        item.resultBanner.textContent = r.is_correct ? "Correct" : "Incorrect";
-
-        item.detail.classList.add("show");
-
-        if (r.chosen_option === null || r.chosen_option === undefined) {
-          item.detail.innerHTML = `You did not answer this question.<br><b>Correct answer:</b> ${r.correct_option}`;
-        } else if (r.is_correct) {
-          item.detail.innerHTML = `<b>Your answer:</b> ${r.chosen_option}`;
-        } else {
-          item.detail.innerHTML = `
-            <b>Your answer:</b> ${r.chosen_option}<br>
-            <b>Correct answer:</b> ${r.correct_option}
-          `;
-        }
-      });
-    }
-
-    main();
-  </script>
+main();
+</script>
 </body>
 </html>
