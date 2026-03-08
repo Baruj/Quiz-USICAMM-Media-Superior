@@ -273,15 +273,127 @@ docker compose -f infra/docker-compose.yml run --rm dbt run --profiles-dir /dbt
 docker compose -f infra/docker-compose.yml run --rm dbt test --profiles-dir /dbt
 ```
 
-## Airflow en local
+## Airflow en local (opcional)
 
-Airflow es opcional en desarrollo local y no forma parte del flujo mínimo del quiz.
+Airflow no es necesario para ejecutar el flujo principal del simulador en desarrollo local. El quiz puede funcionar correctamente sin levantar Airflow, por lo que este componente debe considerarse opcional.
 
-Para levantarlo:
+Solo conviene iniciarlo cuando se desea probar la capa de orquestación y automatización del proyecto, por ejemplo para validar DAGs, ejecutar tareas programadas o integrar procesos analíticos con `dbt`.
+
+Para levantar Airflow en local debe usarse el perfil `airflow` definido en `infra/docker-compose.yml`:
+
+Con tu `docker-compose.yml`, después de levantar Airflow con:
 
 ```bash
 docker compose -f infra/docker-compose.yml --profile airflow up -d --build
 ```
+
+la interfaz web queda en:
+
+```text
+http://localhost:8080
+```
+
+## Cómo entrar paso a paso
+
+### 1. Levantar Airflow
+
+```bash
+docker compose -f infra/docker-compose.yml --profile airflow up -d --build
+```
+
+### 2. Verificar que los contenedores estén corriendo
+
+```bash
+docker compose -f infra/docker-compose.yml ps
+```
+
+Ahí debería aparecer al menos algo como:
+
+* `airflow-webserver`
+* `airflow-scheduler`
+* `airflow-db`
+
+### 3. Abrir el navegador
+
+Entrar a:
+
+```text
+http://localhost:8080
+```
+
+### 4. Iniciar sesión
+
+En tu configuración actual, el usuario inicial se crea aquí:
+
+```yaml
+_AIRFLOW_WWW_USER_USERNAME: admin
+_AIRFLOW_WWW_USER_PASSWORD: admin
+```
+
+Entonces, las credenciales serían:
+
+* **usuario:** `admin`
+* **contraseña:** `admin`
+
+## Si no abre de inmediato
+
+A veces Airflow tarda un poco en inicializarse, sobre todo la primera vez. Si `localhost:8080` no responde todavía, revisa logs con:
+
+```bash
+docker compose -f infra/docker-compose.yml logs airflow-webserver
+```
+
+y también:
+
+```bash
+docker compose -f infra/docker-compose.yml logs airflow-init
+```
+
+## Qué pasa al entrar
+
+Una vez dentro, verás la interfaz de Airflow, donde normalmente podrás:
+
+* ver DAGs;
+* activarlos o pausarlos;
+* lanzarlos manualmente;
+* revisar ejecuciones;
+* consultar logs de tareas.
+
+## Texto para tu README
+
+Puedes ponerlo así:
+
+````text
+### Cómo entrar a Airflow en local
+
+Después de levantar Airflow con el perfil `airflow`, la interfaz web queda disponible en:
+
+```text
+http://localhost:8080
+````
+
+Para acceder, abrir esa URL en el navegador. Con la configuración actual del proyecto, el usuario inicial es:
+
+* usuario: `admin`
+* contraseña: `admin`
+
+Si la página no responde inmediatamente, conviene revisar que los contenedores estén activos con:
+
+```bash
+docker compose -f infra/docker-compose.yml ps
+```
+
+y, en caso necesario, revisar logs del webserver o del proceso de inicialización:
+
+```bash
+docker compose -f infra/docker-compose.yml logs airflow-webserver
+docker compose -f infra/docker-compose.yml logs airflow-init
+```
+
+La interfaz de Airflow permite revisar DAGs, ejecutar flujos manualmente y consultar logs de ejecución.
+
+
+
 
 ## Integración continua
 
