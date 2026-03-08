@@ -1,20 +1,275 @@
 {
-	"title": "SQL + Python + Data Engineering Basics",
-	"description": "Mini quiz para practicar fundamentos de Data Engineering.",
-	"questions": [
-	  {
-	    "prompt": "¿Qué hace un LEFT JOIN cuando no hay match en la tabla derecha?",
-	    "options": ["Elimina la fila", "Rellena con NULLs", "Duplica filas", "Lanza error"],
-	    "correct_index": 1,
-	    "topic": "SQL",
-	    "difficulty": 1
-	  },
-	  {
-	    "prompt": "¿Cuál es una propiedad clave de un pipeline idempotente?",
-	    "options": ["Corre solo de noche", "Mismo input -> mismo output sin duplicar", "Siempre es streaming", "Usa indices"],
-	    "correct_index": 1,
-	    "topic": "Data Engineering",
-	    "difficulty": 2
-	  }
-	]
+  "title": "Simulador USICAMM",
+  "description": "Preguntas de práctica para admisión docente en educación media superior.",
+  "questions": [
+    {
+      "prompt": "En una planeación didáctica, ¿qué elemento define con mayor claridad lo que se espera que el estudiante logre al final de la sesión?",
+      "options": [
+        "La lista de asistencia",
+        "El propósito de aprendizaje",
+        "El color de la presentación",
+        "El número de páginas del material"
+      ],
+      "correct_index": 1,
+      "topic": "Planeación didáctica",
+      "difficulty": 1,
+      "explanation": "El propósito de aprendizaje orienta la selección de actividades, recursos y formas de evaluación."
+    },
+    {
+      "prompt": "¿Qué característica distingue a una planeación didáctica flexible?",
+      "options": [
+        "Se mantiene sin cambios aunque el grupo no avance",
+        "Permite ajustes a partir de necesidades y evidencias del grupo",
+        "Se basa solo en actividades improvisadas",
+        "Elimina la necesidad de evaluación"
+      ],
+      "correct_index": 1,
+      "topic": "Planeación didáctica",
+      "difficulty": 2,
+      "explanation": "Una planeación flexible permite ajustar estrategias, tiempos y recursos según el progreso real del grupo."
+    },
+
+    {
+      "prompt": "¿Cuál de las siguientes acciones corresponde mejor a una evaluación formativa?",
+      "options": [
+        "Asignar una calificación final sin retroalimentación",
+        "Aplicar una prueba sorpresa para sancionar errores",
+        "Dar retroalimentación durante el proceso para mejorar el aprendizaje",
+        "Evaluar únicamente al final del semestre"
+      ],
+      "correct_index": 2,
+      "topic": "Evaluación",
+      "difficulty": 1,
+      "explanation": "La evaluación formativa acompaña el proceso de aprendizaje y ofrece retroalimentación para mejorar."
+    },
+    {
+      "prompt": "¿Qué instrumento resulta más adecuado para valorar un desempeño complejo del estudiante?",
+      "options": [
+        "Una respuesta de sí o no",
+        "Una rúbrica con criterios claros",
+        "La lista de asistencia",
+        "Una encuesta sin criterios"
+      ],
+      "correct_index": 1,
+      "topic": "Evaluación",
+      "difficulty": 2,
+      "explanation": "Una rúbrica permite valorar distintos niveles de desempeño con criterios definidos y observables."
+    },
+
+    {
+      "prompt": "Si en un grupo existen distintos ritmos de aprendizaje, ¿qué decisión pedagógica es más adecuada?",
+      "options": [
+        "Aplicar exactamente la misma actividad sin ajustes",
+        "Ignorar las diferencias para avanzar más rápido",
+        "Diversificar estrategias y apoyos según las necesidades del grupo",
+        "Reducir los contenidos solo para quienes tienen mejor desempeño"
+      ],
+      "correct_index": 2,
+      "topic": "Inclusión",
+      "difficulty": 2,
+      "explanation": "La diversificación de estrategias favorece la participación y el aprendizaje de estudiantes con distintas necesidades."
+    },
+    {
+      "prompt": "Cuando un docente adapta materiales para un estudiante con necesidades específicas de apoyo, está favoreciendo principalmente:",
+      "options": [
+        "La exclusión académica",
+        "La simulación administrativa",
+        "La accesibilidad y la inclusión",
+        "La reducción automática de aprendizajes"
+      ],
+      "correct_index": 2,
+      "topic": "Inclusión",
+      "difficulty": 2,
+      "explanation": "La adaptación de materiales busca asegurar acceso y participación en condiciones más equitativas."
+    },
+
+    {
+      "prompt": "¿Cuál es el principal propósito de establecer acuerdos de convivencia al inicio del curso?",
+      "options": [
+        "Llenar tiempo de la primera clase",
+        "Promover un ambiente de respeto y corresponsabilidad",
+        "Evitar que el docente prepare actividades",
+        "Sustituir toda intervención del docente"
+      ],
+      "correct_index": 1,
+      "topic": "Gestión del aula",
+      "difficulty": 1,
+      "explanation": "Los acuerdos de convivencia ayudan a construir un ambiente ordenado, respetuoso y propicio para aprender."
+    },
+    {
+      "prompt": "Ante un conflicto verbal entre estudiantes durante la clase, ¿cuál es una intervención inicial más pertinente?",
+      "options": [
+        "Ignorarlo por completo",
+        "Exhibir públicamente a los involucrados",
+        "Intervenir de forma oportuna, restablecer normas y mediar el diálogo",
+        "Cancelar la clase definitivamente"
+      ],
+      "correct_index": 2,
+      "topic": "Gestión del aula",
+      "difficulty": 2,
+      "explanation": "La intervención oportuna del docente ayuda a restablecer un clima seguro y educativo."
+    },
+
+    {
+      "prompt": "Un docente detecta que la mayoría del grupo no comprendió un concepto clave. ¿Qué sería lo más pertinente?",
+      "options": [
+        "Continuar con el siguiente tema para no atrasarse",
+        "Reexplicar el contenido con otra estrategia y verificar comprensión",
+        "Poner una sanción por no haber entendido",
+        "Cancelar toda evaluación del tema"
+      ],
+      "correct_index": 1,
+      "topic": "Intervención didáctica",
+      "difficulty": 2,
+      "explanation": "Si la mayoría no comprendió, el docente debe ajustar su intervención y verificar nuevamente el aprendizaje."
+    },
+    {
+      "prompt": "¿Qué criterio refleja mejor una intervención didáctica pertinente?",
+      "options": [
+        "Aplicar siempre la misma técnica sin importar el contexto",
+        "Responder a necesidades detectadas en el grupo con estrategias adecuadas",
+        "Priorizar solo la cobertura rápida de contenidos",
+        "Evitar cualquier modificación a la clase planeada"
+      ],
+      "correct_index": 1,
+      "topic": "Intervención didáctica",
+      "difficulty": 2,
+      "explanation": "La pertinencia didáctica implica ajustar estrategias según el contexto, las evidencias y las necesidades del grupo."
+    },
+
+    {
+      "prompt": "¿Qué característica describe mejor a una actividad de aprendizaje significativo?",
+      "options": [
+        "Se basa solo en memorizar datos aislados",
+        "No tiene relación con el contexto del estudiante",
+        "Conecta nuevos contenidos con saberes previos y situaciones relevantes",
+        "Se limita a copiar información del pizarrón"
+      ],
+      "correct_index": 2,
+      "topic": "Aprendizaje",
+      "difficulty": 2,
+      "explanation": "El aprendizaje significativo conecta los nuevos contenidos con conocimientos previos y contextos con sentido."
+    },
+    {
+      "prompt": "¿Cuál de las siguientes acciones favorece mejor el aprendizaje autónomo?",
+      "options": [
+        "Dar todas las respuestas antes de que el estudiante intente resolver",
+        "Promover que el estudiante planifique, revise y mejore su trabajo",
+        "Evitar cualquier reflexión sobre el propio proceso",
+        "Calificar sin permitir correcciones"
+      ],
+      "correct_index": 1,
+      "topic": "Aprendizaje",
+      "difficulty": 2,
+      "explanation": "El aprendizaje autónomo requiere que el estudiante participe activamente en la regulación de su proceso."
+    },
+
+    {
+      "prompt": "¿Qué opción refleja mejor una retroalimentación útil para el estudiante?",
+      "options": [
+        "\"Está mal\"",
+        "\"Revisa tu procedimiento en el paso 2 y justifica mejor tu conclusión\"",
+        "\"Te faltó estudiar\"",
+        "\"No sirve tu trabajo\""
+      ],
+      "correct_index": 1,
+      "topic": "Retroalimentación",
+      "difficulty": 1,
+      "explanation": "La retroalimentación útil es específica, orientada a la mejora y centrada en el desempeño."
+    },
+    {
+      "prompt": "¿Cuál es una condición importante para que la retroalimentación tenga impacto?",
+      "options": [
+        "Que llegue demasiado tarde",
+        "Que sea confusa y general",
+        "Que sea oportuna, clara y accionable",
+        "Que solo señale errores sin orientación"
+      ],
+      "correct_index": 2,
+      "topic": "Retroalimentación",
+      "difficulty": 1,
+      "explanation": "La retroalimentación mejora el aprendizaje cuando llega a tiempo y permite saber qué corregir y cómo hacerlo."
+    },
+
+    {
+      "prompt": "En el ejercicio docente, el marco normativo sirve principalmente para:",
+      "options": [
+        "Sustituir por completo el criterio profesional del docente",
+        "Orientar la actuación educativa dentro de principios, derechos y obligaciones",
+        "Evitar toda innovación pedagógica",
+        "Reducir la enseñanza a trámites administrativos"
+      ],
+      "correct_index": 1,
+      "topic": "Marco normativo",
+      "difficulty": 2,
+      "explanation": "El marco normativo orienta la práctica docente dentro de principios institucionales, derechos y responsabilidades."
+    },
+    {
+      "prompt": "¿Qué principio se relaciona más directamente con el derecho de los estudiantes a recibir educación sin discriminación?",
+      "options": [
+        "Exclusividad",
+        "Selectividad arbitraria",
+        "Equidad e inclusión",
+        "Competencia individual absoluta"
+      ],
+      "correct_index": 2,
+      "topic": "Marco normativo",
+      "difficulty": 2,
+      "explanation": "La equidad y la inclusión se vinculan con el derecho a una educación accesible y sin discriminación."
+    },
+
+    {
+      "prompt": "Desde una perspectiva ética, ¿qué conducta es más adecuada para el ejercicio docente?",
+      "options": [
+        "Favorecer solo a estudiantes con mejor rendimiento",
+        "Actuar con imparcialidad, respeto y responsabilidad",
+        "Usar evaluaciones como mecanismo de castigo",
+        "Divulgar información personal del alumnado"
+      ],
+      "correct_index": 1,
+      "topic": "Ética docente",
+      "difficulty": 1,
+      "explanation": "La práctica ética del docente exige imparcialidad, respeto a la dignidad de las personas y responsabilidad profesional."
+    },
+    {
+      "prompt": "¿Qué acción vulnera más claramente la ética profesional docente?",
+      "options": [
+        "Dar retroalimentación individual",
+        "Ajustar una estrategia didáctica",
+        "Exponer públicamente datos sensibles de un estudiante",
+        "Diseñar actividades de apoyo"
+      ],
+      "correct_index": 2,
+      "topic": "Ética docente",
+      "difficulty": 2,
+      "explanation": "La difusión de datos sensibles vulnera privacidad, confianza y responsabilidad profesional."
+    },
+
+    {
+      "prompt": "¿Cuál es el principal propósito de vincular la escuela con las familias y la comunidad?",
+      "options": [
+        "Sustituir el trabajo del docente",
+        "Fortalecer el acompañamiento del aprendizaje y la corresponsabilidad",
+        "Delegar totalmente la disciplina a agentes externos",
+        "Reducir la autonomía escolar"
+      ],
+      "correct_index": 1,
+      "topic": "Vinculación con la comunidad",
+      "difficulty": 2,
+      "explanation": "La colaboración con familias y comunidad fortalece el acompañamiento educativo y la corresponsabilidad."
+    },
+    {
+      "prompt": "Una acción concreta de vinculación con la comunidad escolar puede ser:",
+      "options": [
+        "Evitar toda comunicación con madres, padres o tutores",
+        "Organizar espacios de diálogo sobre avances y necesidades del grupo",
+        "Limitar la participación solo a trámites administrativos",
+        "Suspender la comunicación durante todo el semestre"
+      ],
+      "correct_index": 1,
+      "topic": "Vinculación con la comunidad",
+      "difficulty": 1,
+      "explanation": "El diálogo con la comunidad escolar favorece seguimiento, apoyo y construcción conjunta de soluciones."
+    }
+  ]
 }
