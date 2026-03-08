@@ -41,27 +41,44 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install API deps
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r apps/api/requirements.txt
           pip install -r apps/api/requirements-dev.txt
+          pip install "dbt-postgres==1.8.2"
 
-      - name: Init DB schema
+      - name: Install PostgreSQL client
         run: |
           sudo apt-get update
           sudo apt-get install -y postgresql-client
+
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432 -U quiz -d quizops; do
+            echo "Waiting for postgres..."
+            sleep 2
+          done
+        env:
+          PGPASSWORD: quiz
+
+      - name: Create /data symlink for seed.py
+        run: |
+          sudo ln -s "${GITHUB_WORKSPACE}/data" /data
+
+      - name: Init DB schema
+        run: |
           PGPASSWORD=quiz psql -h localhost -U quiz -d quizops -f scripts/init.sql
+
+      - name: Run seed
+        run: |
+          python scripts/seed.py
 
       - name: Run pytest
         env:
           PYTHONPATH: apps/api
         run: |
-          pytest -q
-
-      - name: Install dbt-postgres
-        run: |
-          pip install "dbt-postgres==1.8.2"
+          python -m pytest -q
 
       - name: dbt debug
         run: |

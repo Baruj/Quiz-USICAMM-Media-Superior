@@ -22,3 +22,9 @@ dbt/logs/
 dbt/target/
 dbt/.user.yml
 
+#Venv
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
