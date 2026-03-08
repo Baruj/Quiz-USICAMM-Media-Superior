@@ -281,18 +281,6 @@ Solo conviene iniciarlo cuando se desea probar la capa de orquestación y automa
 
 Para levantar Airflow en local debe usarse el perfil `airflow` definido en `infra/docker-compose.yml`:
 
-Con tu `docker-compose.yml`, después de levantar Airflow con:
-
-```bash
-docker compose -f infra/docker-compose.yml --profile airflow up -d --build
-```
-
-la interfaz web queda en:
-
-```text
-http://localhost:8080
-```
-
 ## Cómo entrar paso a paso
 
 ### 1. Levantar Airflow
