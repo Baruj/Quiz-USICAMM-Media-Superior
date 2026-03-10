@@ -28,3 +28,6 @@ __pycache__/
 *.pyc
 .pytest_cache/
 
+#Deploy
+api_deploy.zip
+
